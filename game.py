@@ -24,9 +24,6 @@ def play_game():
     current_game = Game(adventurer)
 
     room = Room()
-    room.description = "This is an empty room."
-    room.sound = "You hear water dripping."
-    room.smell = "There is a musty smell in the air."
 
     current_game.room = room
 
