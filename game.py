@@ -53,7 +53,7 @@ def explore_labyrinth(current_game: Game):
             play_again()
 
         else:
-            print("I'm not sure what you mean... type help for help.")
+            print("I'm not sure what you mean... type help for available commands.")
 
 
 def play_again():
@@ -80,7 +80,7 @@ def get_yn(question: str) -> str:
 
 
 def show_help():
-    print(Fore.GREEN + """Enter a command:
+    print(Fore.GREEN + """Available commands:
     - n/s/e/w : move in a direction
     - map : show a map of the labyrinth
     - look : look around and describe you environment
