@@ -1,4 +1,6 @@
-from colorama import Fore
+from classes import Player, Room, Game
+
+from colorama import Fore, init
 
 
 def welcome():
@@ -14,14 +16,31 @@ def welcome():
 
 
 def play_game():
+    # init makes sure that colorama works on various platforms
+    init()
+
+    adventurer = Player()
+
+    current_game = Game(adventurer)
+
+    room = Room()
+    room.description = "This is an empty room."
+    room.sound = "You hear water dripping."
+    room.smell = "There is a musty smell in the air."
+
+    current_game.room = room
+
+
     welcome()
     # get player input
     input("Press enter to begin...")
-    explore_labyrinth()
+    explore_labyrinth(current_game)
 
 
-def explore_labyrinth():
+def explore_labyrinth(current_game: Game):
     while True:
+        current_game.room.print_description()
+
         player_input = input(Fore.YELLOW + "-> ").lower().strip()
 
         # process input
