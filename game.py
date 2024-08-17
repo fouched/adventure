@@ -8,6 +8,7 @@ from colorama import Fore, init
 
 
 def welcome():
+
     print(Fore.RED + "                                                  D U N G E O N")
     print(Fore.GREEN + """
     The village of Honeywood has been terrorized by strange, deadly creatures for months now. Unable to endure any 
@@ -20,6 +21,7 @@ def welcome():
 
 
 def play_game():
+
     # init makes sure that colorama works on various platforms
     init()
 
@@ -29,11 +31,13 @@ def play_game():
 
     welcome()
     # get player input
-    input("Press enter to begin...")
+    input(f"{Fore.CYAN}Press enter to begin...")
     explore_labyrinth(current_game)
+
 
 # generate room
 def generate_room() -> Room:
+
     items = []
     monster = {}
 
@@ -51,6 +55,7 @@ def generate_room() -> Room:
 
 
 def explore_labyrinth(current_game: Game):
+
     while True:
         room = generate_room()
         current_game.room = room
@@ -62,18 +67,25 @@ def explore_labyrinth(current_game: Game):
         if current_game.room.monster:
             print(f"{Fore.RED}There is a {current_game.room.monster['name']} here!")
 
-        player_input = input(Fore.YELLOW + "-> ").lower().strip()
+        player_input = input(f"{Fore.YELLOW}-> ").lower().strip()
 
         # process input
         if player_input == "help":
             show_help()
+
+        elif player_input.startswith("get"):
+            if not current_game.room.items:
+                print(f"{Fore.CYAN}There is nothing to pick up.")
+                continue
+            else:
+                get_an_item(current_game, player_input)
 
         elif player_input in ["n", "s", "e", "w"]:
             print(f"{Fore.GREEN}You move deeper into the dungeon.")
             continue
 
         elif player_input == "quit":
-            print("Overcome with terror, you flee the dungeon.")
+            print(f"{Fore.GREEN}Overcome with terror, you flee the dungeon.")
             # TODO: print out final score
             play_again()
 
@@ -81,7 +93,39 @@ def explore_labyrinth(current_game: Game):
             print(f"{Fore.RED}I'm not sure what you mean... type help for available commands.")
 
 
+def get_an_item(current_game: Game, player_input: str):
+
+    if len(current_game.room.items) > 0 and player_input[4:] == "":
+        player_input = player_input + " " + current_game.room.items[0]["name"]
+
+    if player_input[4:] not in current_game.player.inventory:
+        idx = find_in_list(player_input[4:], "name", current_game.room.items)
+
+        if idx > -1:
+            cur_item = current_game.room.items[idx]
+            current_game.player.inventory.append(cur_item["name"])
+            current_game.room.items.pop(idx)
+            print(f"{Fore.CYAN}You pick up the {cur_item['name']}.")
+        else:
+            print(f"{Fore.RED}There is no {player_input[4:]}here.")
+    else:
+        print(f"{Fore.CYAN}You already have a {player_input[4:]}, and decide you don't need another one.")
+
+
+def find_in_list(search_string: str, key: str, list_to_search: list) -> int:
+
+    idx = -1
+    count = 0
+    for item in list_to_search:
+        if item[key] == search_string:
+            idx = count
+        count += 1
+
+    return idx
+
+
 def play_again():
+
     yn = get_yn(Fore.CYAN + "Play again")
     if yn == "yes":
         play_game()
@@ -91,6 +135,7 @@ def play_again():
 
 
 def get_yn(question: str) -> str:
+
     while True:
         answer = input(question + " (yes/no) -> ").lower().strip()
         if answer not in ["yes", "no", "y", "n"]:
@@ -105,6 +150,7 @@ def get_yn(question: str) -> str:
 
 
 def show_help():
+
     print(Fore.GREEN + """Available commands:
     - n/s/e/w : move in a direction
     - map : show a map of the labyrinth
@@ -119,3 +165,4 @@ def show_help():
     - inventory : show current inventory
     - status : show current player status
     - quit : end the game""")
+
