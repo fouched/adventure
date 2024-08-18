@@ -72,6 +72,7 @@ def explore_labyrinth(current_game: Game):
         # process input
         if player_input == "help":
             show_help()
+            continue
 
         elif player_input.startswith("get"):
             if not current_game.room.items:
@@ -79,6 +80,10 @@ def explore_labyrinth(current_game: Game):
                 continue
             else:
                 get_an_item(current_game, player_input)
+
+        elif player_input == "inventory" or player_input == "inv":
+            show_inventory(current_game)
+            continue
 
         elif player_input in ["n", "s", "e", "w"]:
             print(f"{Fore.GREEN}You move deeper into the dungeon.")
@@ -91,6 +96,12 @@ def explore_labyrinth(current_game: Game):
 
         else:
             print(f"{Fore.RED}I'm not sure what you mean... type help for available commands.")
+
+
+def show_inventory(current_game: Game):
+    print(f"{Fore.CYAN}Your inventory:")
+    for x in current_game.player.inventory:
+        print(f"    - {x.capitalize()}")
 
 
 def get_an_item(current_game: Game, player_input: str):
@@ -152,7 +163,7 @@ def get_yn(question: str) -> str:
 def show_help():
 
     print(Fore.GREEN + """Available commands:
-    - n/s/e/w : move in a direction
+    - n / s / e / w : move in a direction
     - map : show a map of the labyrinth
     - look : look around and describe you environment
     - equip <item> : use an item from your inventory
@@ -162,7 +173,7 @@ def show_help():
     - get <item> : pick up an item
     - drop <item> : drop an item
     - rest : restore health by resting
-    - inventory : show current inventory
+    - inventory / inv : show current inventory
     - status : show current player status
     - quit : end the game""")
 
