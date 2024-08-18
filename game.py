@@ -28,10 +28,12 @@ def play_game():
     adventurer = Player()
 
     current_game = Game(adventurer)
-
+    current_game.room = generate_room()
     welcome()
+
     # get player input
     input(f"{Fore.CYAN}Press enter to begin...")
+    current_game.room.print_description()
     explore_labyrinth(current_game)
 
 
@@ -57,9 +59,6 @@ def generate_room() -> Room:
 def explore_labyrinth(current_game: Game):
 
     while True:
-        room = generate_room()
-        current_game.room = room
-        current_game.room.print_description()
 
         for i in current_game.room.items:
             print(f"{Fore.YELLOW}You see a {i['name']}")
@@ -80,6 +79,7 @@ def explore_labyrinth(current_game: Game):
                 continue
             else:
                 get_an_item(current_game, player_input)
+                continue
 
         elif player_input == "inventory" or player_input == "inv":
             show_inventory(current_game)
@@ -87,7 +87,6 @@ def explore_labyrinth(current_game: Game):
 
         elif player_input in ["n", "s", "e", "w"]:
             print(f"{Fore.GREEN}You move deeper into the dungeon.")
-            continue
 
         elif player_input == "quit":
             print(f"{Fore.GREEN}Overcome with terror, you flee the dungeon.")
@@ -95,7 +94,11 @@ def explore_labyrinth(current_game: Game):
             play_again()
 
         else:
-            print(f"{Fore.RED}I'm not sure what you mean... type help for available commands.")
+            print(f"{Fore.CYAN}I'm not sure what you mean... type help for available commands.")
+            continue
+
+        current_game.room = generate_room()
+        current_game.room.print_description()
 
 
 def show_inventory(current_game: Game):
