@@ -61,7 +61,7 @@ def explore_labyrinth(current_game: Game):
     while True:
 
         for i in current_game.room.items:
-            print(f"{Fore.YELLOW}You see a {i['name']}")
+            print(f"{Fore.YELLOW}You see a {i['name']}.")
 
         if current_game.room.monster:
             print(f"{Fore.RED}There is a {current_game.room.monster['name']} here!")
@@ -71,6 +71,10 @@ def explore_labyrinth(current_game: Game):
         # process input
         if player_input == "help":
             show_help()
+            continue
+
+        elif player_input == "look":
+            current_game.room.print_description()
             continue
 
         elif player_input.startswith("get"):
@@ -85,10 +89,14 @@ def explore_labyrinth(current_game: Game):
             show_inventory(current_game)
             continue
 
+        elif player_input.startswith("drop"):
+            drop_an_item(current_game, player_input)
+            continue
+
         elif player_input in ["n", "s", "e", "w"]:
             print(f"{Fore.GREEN}You move deeper into the dungeon.")
 
-        elif player_input == "quit":
+        elif player_input == "q" or player_input == "quit":
             print(f"{Fore.GREEN}Overcome with terror, you flee the dungeon.")
             # TODO: print out final score
             play_again()
@@ -100,8 +108,18 @@ def explore_labyrinth(current_game: Game):
         current_game.room = generate_room()
         current_game.room.print_description()
 
+def drop_an_item(current_game: Game, player_input: str):
+
+    try:
+        current_game.player.inventory.remove(player_input[5:])
+        print(f"{Fore.CYAN}You drop the {player_input[5:]}.")
+        current_game.room.items.append(armory.items[player_input[5:]])
+    except ValueError:
+        print(f"{Fore.RED}You are not carrying a {player_input[5:]}!")
+
 
 def show_inventory(current_game: Game):
+
     print(f"{Fore.CYAN}Your inventory:")
     for x in current_game.player.inventory:
         print(f"    - {x.capitalize()}")
@@ -178,5 +196,5 @@ def show_help():
     - rest : restore health by resting
     - inventory / inv : show current inventory
     - status : show current player status
-    - quit : end the game""")
+    - q / quit : end the game""")
 
