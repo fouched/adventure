@@ -93,6 +93,14 @@ def explore_labyrinth(current_game: Game):
             drop_an_item(current_game, player_input)
             continue
 
+        elif player_input.startswith("equip"):
+            use_item(current_game.player, player_input[6:])
+            continue
+
+        elif player_input.startswith("use"):
+            use_item(current_game.player, player_input[4:])
+            continue
+
         elif player_input in ["n", "s", "e", "w"]:
             print(f"{Fore.GREEN}You move deeper into the dungeon.")
 
@@ -107,6 +115,38 @@ def explore_labyrinth(current_game: Game):
 
         current_game.room = generate_room()
         current_game.room.print_description()
+
+
+def use_item(player: Player, item: str):
+
+    if item in player.inventory:
+        old_weapon = player.current_weapon
+
+        if armory.items[item]["type"] == "weapon":
+            player.current_weapon = armory.items[item]
+            print(f"{Fore.CYAN}You arm yourself with a {player.current_weapon['name']} instead of your {old_weapon['name']}.")
+
+            # you can't use a shield with a bow
+            if item == "longbow" and player.current_shield["name"] != "no shield":
+                player.current_shield = armory.default["no shield"]
+                print(f"{Fore.CYAN}Since you can't use a shield with a {item}, you sling it over your back.")
+
+        elif armory.items[item]["type"] == "armor":
+            player.current_armor = armory.items[item]
+            print(f"{Fore.CYAN}You put on the {player.current_armor['name']}.")
+        elif armory.items[item]["type"] == "shield":
+            # you can't use a shield with a bow
+            if player.current_weapon['name'] == "longbow":
+                print(f"{Fore.RED}You can't use a shield while you are using a bow.")
+            else:
+                player.current_shield = armory.items[item]
+                print(f"{Fore.CYAN}You equip your {player.current_shield['name']}.")
+        else:
+            print(f"{Fore.RED}You can't equip a {item}.")
+    else:
+        print(f"{Fore.RED}You don't have an {item}.")
+
+
 
 def drop_an_item(current_game: Game, player_input: str):
 
@@ -187,7 +227,7 @@ def show_help():
     - n / s / e / w : move in a direction
     - map : show a map of the labyrinth
     - look : look around and describe you environment
-    - equip <item> : use an item from your inventory
+    - use / equip <item> : use an item from your inventory
     - unequip <item> : stop using an item from your inventory
     - fight : attack a foe
     - examine <object> : examine an object more closely
