@@ -66,7 +66,7 @@ def explore_labyrinth(current_game: Game):
         if current_game.room.monster:
             print(f"{Fore.RED}There is a {current_game.room.monster['name']} here!")
 
-        player_input = input(f"{Fore.YELLOW}-> ").lower().strip()
+        player_input = input(f"{Fore.YELLOW}-> {Fore.WHITE}").lower().strip()
 
         # process input
         if player_input == "help":
@@ -124,7 +124,8 @@ def use_item(player: Player, item: str):
 
         if armory.items[item]["type"] == "weapon":
             player.current_weapon = armory.items[item]
-            print(f"{Fore.CYAN}You arm yourself with a {player.current_weapon['name']} instead of your {old_weapon['name']}.")
+            print(f"{Fore.CYAN}You arm yourself with a {player.current_weapon['name']} "
+                    + f"instead of your {old_weapon['name']}.")
 
             # you can't use a shield with a bow
             if item == "longbow" and player.current_shield["name"] != "no shield":
@@ -144,25 +145,42 @@ def use_item(player: Player, item: str):
         else:
             print(f"{Fore.RED}You can't equip a {item}.")
     else:
-        print(f"{Fore.RED}You don't have an {item}.")
+        print(f"{Fore.RED}You don't have a {item}.")
 
 
 
 def drop_an_item(current_game: Game, player_input: str):
 
-    try:
-        current_game.player.inventory.remove(player_input[5:])
-        print(f"{Fore.CYAN}You drop the {player_input[5:]}.")
-        current_game.room.items.append(armory.items[player_input[5:]])
-    except ValueError:
-        print(f"{Fore.RED}You are not carrying a {player_input[5:]}!")
+    if player_input[5:] == current_game.player.current_weapon["name"]:
+        print(f"{Fore.RED}You cannot drop your currently equipped weapon!")
+    elif player_input[5:] == current_game.player.current_armor["name"]:
+        print(f"{Fore.RED}You cannot drop your currently equipped armor!")
+    elif player_input[5:] == current_game.player.current_shield["name"]:
+        print(f"{Fore.RED}You cannot drop your currently equipped shield!")
+    else:
+        try:
+            current_game.player.inventory.remove(player_input[5:])
+            print(f"{Fore.CYAN}You drop the {player_input[5:]}.")
+            current_game.room.items.append(armory.items[player_input[5:]])
+        except ValueError:
+            print(f"{Fore.RED}You are not carrying a {player_input[5:]}!")
 
 
 def show_inventory(current_game: Game):
 
     print(f"{Fore.CYAN}Your inventory:")
+    print(f"    - {current_game.player.treasure} pieces of gold.")
+
     for x in current_game.player.inventory:
-        print(f"    - {x.capitalize()}")
+        if x == current_game.player.current_weapon["name"]:
+            print(f"    - {x.capitalize()} (equipped)")
+        elif x == current_game.player.current_armor["name"]:
+            print(f"    - {x.capitalize()} (equipped)")
+        elif x == current_game.player.current_shield["name"]:
+            print(f"    - {x.capitalize()} (equipped)")
+        else:
+            print(f"    - {x.capitalize()}")
+
 
 
 def get_an_item(current_game: Game, player_input: str):
