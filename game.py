@@ -65,6 +65,14 @@ def explore_labyrinth(current_game: Game):
 
         if current_game.room.monster:
             print(f"{Fore.RED}There is a {current_game.room.monster['name']} here!")
+            fight_or_flee = get_input("Do you want to fight or flee?", ["fight", "flee"])
+
+            while True:
+                if fight_or_flee == "flee":
+                    print(f"{Fore.CYAN}You turn and run, coward that you are...")
+                    break
+                else:
+                    pass
 
         player_input = input(f"{Fore.YELLOW}-> {Fore.WHITE}").lower().strip()
 
@@ -277,6 +285,16 @@ def get_yn(question: str) -> str:
                 answer = "no"
 
             return answer
+
+
+# get_input prompts the user for input, and limits responses to whatever is in the list of answers
+def get_input(question: str, answers:list) -> str:
+    while True:
+        resp = input(f"{Fore.CYAN}{question} {Fore.YELLOW}-> {Fore.WHITE}").lower().strip()
+        if resp not in answers:
+            print(f"{Fore.YELLOW}Please enter a valid response.")
+        else:
+            return resp
 
 
 def show_help():
