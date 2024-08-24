@@ -108,6 +108,10 @@ def explore_labyrinth(current_game: Game):
         elif player_input in ["n", "s", "e", "w"]:
             print(f"{Fore.CYAN}You move deeper into the dungeon.")
 
+        elif player_input == "status":
+            print_status(current_game)
+            continue
+
         elif player_input == "q" or player_input == "quit":
             print(f"{Fore.YELLOW}Overcome with terror, you flee the dungeon.")
             # TODO: print out final score
@@ -119,6 +123,19 @@ def explore_labyrinth(current_game: Game):
 
         current_game.room = generate_room()
         current_game.room.print_description()
+        current_game.player.turns += 1
+
+
+def print_status(current_game: Game):
+    print(Fore.CYAN)
+    print(f"You have played the game for {current_game.player.turns} turns, "
+          + f"defeated {current_game.player.monsters_defeated} monsters, "
+          + f"and found {current_game.player.treasure} gold pieces.")
+    print(f"You have earned {current_game.player.xp} xp.")
+    print(f"You have {current_game.player.hp} hit points remaining, out of 100.")
+    print(f"Currently equipped weapon: {current_game.player.current_weapon['name']}")
+    print(f"Currently equipped armor: {current_game.player.current_armor['name']}")
+    print(f"Currently equipped shield: {current_game.player.current_shield['name']}")
 
 
 def unequip_item(player: Player, item:str):
@@ -243,7 +260,7 @@ def play_again():
     if yn == "yes":
         play_game()
     else:
-        print("Until next time, adventurer.")
+        print(f"{Fore.YELLOW}Until next time, adventurer.")
         exit(0)
 
 
