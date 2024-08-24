@@ -101,11 +101,15 @@ def explore_labyrinth(current_game: Game):
             use_item(current_game.player, player_input[4:])
             continue
 
+        elif player_input.startswith("unequip"):
+            unequip_item(current_game.player, player_input[8:])
+            continue
+
         elif player_input in ["n", "s", "e", "w"]:
-            print(f"{Fore.GREEN}You move deeper into the dungeon.")
+            print(f"{Fore.CYAN}You move deeper into the dungeon.")
 
         elif player_input == "q" or player_input == "quit":
-            print(f"{Fore.GREEN}Overcome with terror, you flee the dungeon.")
+            print(f"{Fore.YELLOW}Overcome with terror, you flee the dungeon.")
             # TODO: print out final score
             play_again()
 
@@ -115,6 +119,25 @@ def explore_labyrinth(current_game: Game):
 
         current_game.room = generate_room()
         current_game.room.print_description()
+
+
+def unequip_item(player: Player, item:str):
+
+    if item in player.inventory:
+        if player.current_weapon["name"] == item:
+            player.current_weapon = armory.default["hands"]
+            print(f"{Fore.CYAN}You stop using the {item}.")
+        elif player.current_armor["name"] == item:
+            player.current_armor = armory.default["clothes"]
+            print(f"{Fore.CYAN}You stop using the {item}.")
+        elif player.current_shield["name"] == item:
+            player.current_shield = armory.default["no shield"]
+            print(f"{Fore.CYAN}You stop using the {item}.")
+        else:
+            print(f"{Fore.RED}You don't have a {item} equipped!")
+    else:
+        print(f"{Fore.RED}You don't have a {item}.")
+
 
 
 def use_item(player: Player, item: str):
