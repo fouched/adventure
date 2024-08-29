@@ -2,9 +2,13 @@ import random
 
 import armory
 import bestiary
+import combat
 from classes import Player, Room, Game
+from util import get_yn
 
 from colorama import Fore, init
+
+
 
 
 def welcome():
@@ -72,7 +76,13 @@ def explore_labyrinth(current_game: Game):
                     print(f"{Fore.CYAN}You turn and run, coward that you are...")
                     break
                 else:
-                    pass
+                    winner = combat.fight(current_game)
+                    if winner == "player":
+                        break
+                    elif winner == "monster":
+                        break
+                    else:
+                        break
 
         player_input = input(f"{Fore.YELLOW}-> {Fore.WHITE}").lower().strip()
 
@@ -270,21 +280,6 @@ def play_again():
     else:
         print(f"{Fore.YELLOW}Until next time, adventurer.")
         exit(0)
-
-
-def get_yn(question: str) -> str:
-
-    while True:
-        answer = input(question + " (yes/no) -> ").lower().strip()
-        if answer not in ["yes", "no", "y", "n"]:
-            print("Please enter yes or no.")
-        else:
-            if answer == "y":
-                answer = "yes"
-            elif answer == "n":
-                answer = "no"
-
-            return answer
 
 
 # get_input prompts the user for input, and limits responses to whatever is in the list of answers
