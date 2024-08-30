@@ -68,9 +68,9 @@ def fight(current_game: Game) -> str:
             break
 
         # feedback on monster state
-        if monster_hp < 0.5 * monster_original_hp:
+        if monster_hp < int(0.5 * monster_original_hp):
             print(f"{Fore.YELLOW}The {rm.monster['name']} is bleeding.")
-        elif monster_hp < 0.3 * monster_original_hp:
+        elif monster_hp < int(0.3 * monster_original_hp):
             print(f"{Fore.YELLOW} The {rm.monster['name']} is bleeding profusely, and looks to be nearly dead.")
 
         # feedback on player state
