@@ -78,10 +78,19 @@ def explore_labyrinth(current_game: Game):
                 else:
                     winner = combat.fight(current_game)
                     if winner == "player":
+                        gold = random.randint(1, 100)
+                        print(f"You search the monster's body and find {gold} pieces of gold.")
+                        current_game.player.treasure = current_game.player.treasure + gold
+                        current_game.player.xp = current_game.player.xp + 100
+                        current_game.player.monsters_defeated = current_game.player.monsters_defeated + 1
+                        current_game.room.monster = {}
                         break
                     elif winner == "monster":
+                        print(f"{Fore.RED}You have failed in your mission, and your body lies in the labyrinth forever.")
+                        play_again()
                         break
                     else:
+                        print(f"{Fore.CYAN}You flee in terror from the monster.")
                         break
 
         player_input = input(f"{Fore.YELLOW}-> {Fore.WHITE}").lower().strip()
