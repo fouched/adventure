@@ -1,10 +1,13 @@
 import random
+from traceback import print_tb
 
 import armory
 import bestiary
 import combat
+import config as cfg
 from classes import Player, Room, Game
 from util import get_yn
+
 
 from colorama import Fore, init
 
@@ -132,6 +135,10 @@ def explore_labyrinth(current_game: Game):
             unequip_item(current_game.player, player_input[8:])
             continue
 
+        elif player_input == "rest" or player_input == "r":
+            rest(current_game)
+            continue
+
         elif player_input in ["n", "s", "e", "w"]:
             print(f"{Fore.CYAN}You move deeper into the dungeon.")
 
@@ -151,6 +158,17 @@ def explore_labyrinth(current_game: Game):
         current_game.room = generate_room()
         current_game.room.print_description()
         current_game.player.turns += 1
+
+
+def rest(current_game: Game):
+    if current_game.player.hp == cfg.PLAYER_HP:
+        print(f"{Fore.CYAN}You are fully rested, and feel great. There is no point in sitting around...")
+    else:
+        current_game.player.hp = current_game.player.hp + random.randint(1, 10)
+        if current_game.player.hp > cfg.PLAYER_HP:
+            current_game.player.hp = cfg.PLAYER_HP
+
+        print(f"{Fore.CYAN}You feel better ({current_game.player.hp}/{cfg.PLAYER_HP} hit points).")
 
 
 def print_status(current_game: Game):
@@ -313,7 +331,7 @@ def show_help():
     - examine <object> : examine an object more closely
     - get <item> : pick up an item
     - drop <item> : drop an item
-    - rest : restore health by resting
+    - r / rest : restore health by resting
     - inv / inventory : show current inventory
     - status : show current player status
     - q / quit : end the game""")
