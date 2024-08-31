@@ -5,6 +5,7 @@ import armory
 import bestiary
 import combat
 import config as cfg
+import world
 from classes import Player, Room, Game
 from util import get_yn
 
@@ -14,7 +15,7 @@ from colorama import Fore, init
 
 
 
-def welcome():
+def welcome(current_game: Game):
 
     print(Fore.RED + "                                                  D U N G E O N")
     print(Fore.GREEN + """
@@ -22,9 +23,11 @@ def welcome():
     longer, the villagers pooled their wealth and hired the most skilled adventurer they could find: you. After
     listening to their tale of woe, you agree to enter the labyrinth where most of the creatures seem to originate,
     and destroy the foul beasts. Armed with nothing but a bundle of torches, you descend into the labyrinth, 
-    ready to do battle....
-        
-    """)
+    ready to do battle....""")
+
+    print()
+    print(f"According the the people of Honeywood there are {current_game.num_monsters} creatures in this labyrinth.")
+    print()
 
 
 def play_game():
@@ -34,9 +37,18 @@ def play_game():
 
     adventurer = Player()
 
-    current_game = Game(adventurer)
-    current_game.room = generate_room()
-    welcome()
+    current_game = Game(adventurer, cfg.MAX_X_AXIS, cfg.MAX_Y_AXIS)
+
+    all_rooms, num_monsters = world.create_world(current_game)
+    current_game.num_monsters = num_monsters
+    current_game.set_rooms(all_rooms)
+
+    entrance = "0,0"
+    current_game.set_current_room(current_game.rooms[entrance])
+    current_game.set_entrance(entrance)
+    current_game.room.location = entrance
+
+    welcome(current_game)
 
     # get player input
     input(f"{Fore.CYAN}Press enter to begin...")
@@ -45,7 +57,7 @@ def play_game():
 
 
 # generate room
-def generate_room() -> Room:
+def generate_room(location: str) -> Room:
 
     items = []
     monster = {}
@@ -60,7 +72,7 @@ def generate_room() -> Room:
         monster = random.choice(bestiary.monsters)
 
 
-    return Room(items, monster)
+    return Room(items, monster, location)
 
 
 def explore_labyrinth(current_game: Game):
@@ -140,6 +152,43 @@ def explore_labyrinth(current_game: Game):
             continue
 
         elif player_input in ["n", "s", "e", "w"]:
+            direction = player_input
+            if current_game.room.location == current_game.entrance and direction == "s":
+                yn = get_yn(f"{Fore.CYAN}You are about to leave the dungeon, are you sure")
+                if yn == "yes":
+                    play_again()
+                else:
+                    continue
+
+
+            if direction == "n":
+                if current_game.player.y_coord < current_game.y:
+                    current_game.player.y_coord = current_game.player.y_coord + 1
+                else:
+                    print(f"{Fore.RED}You bump into a stone wall.")
+                    continue
+
+            elif direction == "s":
+                if current_game.player.y_coord > (current_game.y * -1):
+                    current_game.player.y_coord = current_game.player.y_coord - 1
+                else:
+                    print(f"{Fore.RED}You bump into a stone wall.")
+                    continue
+
+            elif direction == "e":
+                if current_game.player.x_coord < current_game.x:
+                    current_game.player.x_coord = current_game.player.x_coord + 1
+                else:
+                    print(f"{Fore.RED}You bump into a stone wall.")
+                    continue
+
+            elif direction == "w":
+                if current_game.player.x_coord > (current_game.x * -1):
+                    current_game.player.x_coord = current_game.player.x_coord - 1
+                else:
+                    print(f"{Fore.RED}You bump into a stone wall.")
+                    continue
+
             print(f"{Fore.CYAN}You move deeper into the dungeon.")
 
         elif player_input == "status":
@@ -155,7 +204,10 @@ def explore_labyrinth(current_game: Game):
             print(f"{Fore.CYAN}I'm not sure what you mean... type help for available commands.")
             continue
 
-        current_game.room = generate_room()
+        new_location = f"{current_game.player.x_coord},{current_game.player.y_coord}"
+        current_game.room = current_game.rooms[new_location]
+        current_game.room.location = new_location
+
         current_game.room.print_description()
         current_game.player.turns += 1
 
