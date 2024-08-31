@@ -4,11 +4,12 @@ from colorama import Fore
 
 import armory
 import descriptions
+import config as cfg
 
 
 class Player:
     def __init__(self):
-        self.hp: int = 100
+        self.hp: int = cfg.PLAYER_HP
         self.treasure: int = 0
         self.monsters_defeated: int = 0
         self.xp: int = 0

@@ -208,6 +208,11 @@ def explore_labyrinth(current_game: Game):
         current_game.room = current_game.rooms[new_location]
         current_game.room.location = new_location
 
+        if new_location in current_game.player.visited:
+            print(f"{Fore.YELLOW}This place seems familiar...")
+        else:
+            current_game.player.visited.append(new_location)
+
         current_game.room.print_description()
         current_game.player.turns += 1
 
