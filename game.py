@@ -233,6 +233,11 @@ def rest(current_game: Game):
 
 
 def show_map(current_game: Game):
+    #print the top line
+    for i in range(1, cfg.MAX_X_AXIS * 6 + 3):
+        print(Fore.YELLOW + "-", end="")
+    print()
+
     for y in range(cfg.MAX_Y_AXIS, (cfg.MAX_Y_AXIS + 1) * -1, -1):
         for x in range(cfg.MAX_X_AXIS * -1, cfg.MAX_X_AXIS + 1):
             content = ""
@@ -255,6 +260,15 @@ def show_map(current_game: Game):
             print(Fore.YELLOW + f"{content.center(3)}", end="")
 
         print()
+
+    # print the bottom line
+    for i in range(1, cfg.MAX_X_AXIS * 6 + 3):
+        print(Fore.YELLOW + "-", end="")
+    print()
+    #print the legend
+    print(Back.WHITE + Fore.RED + " X " + Back.RESET + ": You  ", end="")
+    print(Fore.RED + " M " + Back.RESET + ": Monster  ", end="")
+    print(Back.WHITE + Fore.GREEN + " E " + Back.RESET + ": Exit")
 
 
 
