@@ -10,7 +10,7 @@ from classes import Player, Room, Game
 from util import get_yn
 
 
-from colorama import Fore, init
+from colorama import Fore, Back, init
 
 
 
@@ -117,6 +117,10 @@ def explore_labyrinth(current_game: Game):
 
         elif player_input == "look":
             current_game.room.print_description()
+            continue
+
+        elif player_input == "map":
+            show_map(current_game)
             continue
 
         elif player_input.startswith("get"):
@@ -226,6 +230,32 @@ def rest(current_game: Game):
             current_game.player.hp = cfg.PLAYER_HP
 
         print(f"{Fore.CYAN}You feel better ({current_game.player.hp}/{cfg.PLAYER_HP} hit points).")
+
+
+def show_map(current_game: Game):
+    for y in range(cfg.MAX_Y_AXIS, (cfg.MAX_Y_AXIS + 1) * -1, -1):
+        for x in range(cfg.MAX_X_AXIS * -1, cfg.MAX_X_AXIS + 1):
+            content = ""
+            if f"{x},{y}" == current_game.room.location:
+                # our current location
+                content = Fore.RED + Back.WHITE + " X " + Fore.YELLOW + Back.RESET
+            elif f"{x},{y}" == current_game.entrance:
+                content = Fore.GREEN + Back.WHITE + " E " + Fore.YELLOW + Back.RESET
+            elif f"{x},{y}" in current_game.player.visited:
+                # a place we've visited
+                test_room = current_game.rooms[f"{x},{y}"]
+                if test_room.monster:
+                    # we left a monster in this room
+                    content = Fore.RED + " M " + Fore.YELLOW
+                else:
+                    pass
+            else:
+                content = " ? "
+
+            print(Fore.YELLOW + f"{content.center(3)}", end="")
+
+        print()
+
 
 
 def print_status(current_game: Game):
