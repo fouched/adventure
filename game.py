@@ -1,4 +1,6 @@
 import random
+import sys
+from time import sleep
 from traceback import print_tb
 
 import armory
@@ -26,8 +28,23 @@ def welcome(current_game: Game):
     ready to do battle....""")
 
     print()
-    print(f"According the the people of Honeywood there are {current_game.num_monsters} creatures in this labyrinth.")
+    print(f"    According the the people of Honeywood there are {current_game.num_monsters} creatures in this labyrinth.")
     print()
+
+    sleep(1)
+    print(f"{Fore.YELLOW}    Something smashed into the back of your head, and you fall down senseless...")
+    print("                                 ", end="")
+    for i in range(10):
+        print(".", end="")
+        sys.stdout.flush()
+        sleep(0.25)
+
+    print()
+    print()
+
+    print(f"{Fore.GREEN}    You awaken, some unknown time later, only to discover that nearly all of your possessions are\n"
+          + f"    missing. You grit your teeth, climb to your feet, and press on, determined to complete you mission.\n")
+    sleep(1)
 
 
 def play_game(term):
@@ -55,6 +72,7 @@ def play_game(term):
 
     # get player input
     input(f"{Fore.CYAN}Press enter to begin...")
+    print()
     current_game.room.print_description()
     explore_labyrinth(current_game)
 
@@ -133,6 +151,10 @@ def explore_labyrinth(current_game: Game):
 
         elif player_input == "look":
             current_game.room.print_description()
+            continue
+
+        elif player_input.startswith("examine"):
+            examine(player_input[8:])
             continue
 
         elif player_input == "map":
@@ -220,7 +242,7 @@ def explore_labyrinth(current_game: Game):
 
         elif player_input == "q" or player_input == "quit":
             print(f"{Fore.YELLOW}Overcome with terror, you flee the dungeon.")
-            # TODO: print out final score
+            print_final_score(current_game)
             play_again()
 
         else:
@@ -250,6 +272,21 @@ def rest(current_game: Game):
 
         print(f"{Fore.CYAN}You feel better ({current_game.player.hp}/{cfg.PLAYER_HP} hit points).")
 
+
+def examine(item: str):
+    print(f"{Fore.CYAN}It's just a normal {item}. There is nothing special about it.")
+
+
+def print_final_score(current_game: Game):
+    print(f"In {current_game.player.turns} turns, you defeated {current_game.player.monsters_defeated} "
+          + f"monsters, accumulated {current_game.player.treasure} gold, and gained {current_game.player.xp} xp.")
+    if current_game.player.xp > 500:
+        print(f"{Fore.GREEN}Well done, adventurer.")
+    elif current_game.player.xp > 250:
+        print(f"{Fore.YELLOW}Not too bad, adventurer.")
+    else:
+        print(f"{Fore.RED}I guess it's amateur night.")
+    draw_ui(current_game)
 
 def show_map(current_game: Game):
     #print the top line
@@ -447,7 +484,6 @@ def show_help():
     - look : look around and describe you environment
     - use / equip <item> : use an item from your inventory
     - unequip <item> : stop using an item from your inventory
-    - fight : attack a foe
     - examine <object> : examine an object more closely
     - get <item> : pick up an item
     - drop <item> : drop an item
