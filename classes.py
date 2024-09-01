@@ -40,7 +40,7 @@ class Room:
 
 
 class Game:
-    def __init__(self, player: Player, x: int, y: int):
+    def __init__(self, player: Player, x: int, y: int, term):
         self.player = player
         self.room = None
         self.num_monsters: int = 0
@@ -48,6 +48,7 @@ class Game:
         self.x: int = x
         self.y: int = y
         self.entrance: str = ""
+        self.term = term
 
     def set_rooms(self, rooms: dict):
         self.rooms = rooms

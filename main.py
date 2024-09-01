@@ -9,7 +9,7 @@ def main():
     print(term.clear())
 
     # play game until game over or player quits
-    game.play_game()
+    game.play_game(term)
 
 if __name__ == "__main__":
     main()

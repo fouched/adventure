@@ -30,14 +30,14 @@ def welcome(current_game: Game):
     print()
 
 
-def play_game():
+def play_game(term):
 
     # init makes sure that colorama works on various platforms
     init()
 
     adventurer = Player()
 
-    current_game = Game(adventurer, cfg.MAX_X_AXIS, cfg.MAX_Y_AXIS)
+    current_game = Game(adventurer, cfg.MAX_X_AXIS, cfg.MAX_Y_AXIS, term)
 
     all_rooms, num_monsters = world.create_world(current_game)
     current_game.num_monsters = num_monsters
@@ -47,6 +47,9 @@ def play_game():
     current_game.set_current_room(current_game.rooms[entrance])
     current_game.set_entrance(entrance)
     current_game.room.location = entrance
+
+    # draw top status bar
+    draw_ui(current_game)
 
     welcome(current_game)
 
@@ -84,11 +87,15 @@ def explore_labyrinth(current_game: Game):
 
         if current_game.room.monster:
             print(f"{Fore.RED}There is a {current_game.room.monster['name']} here!")
+            # draw top status bar
+            draw_ui(current_game)
             fight_or_flee = get_input("Do you want to fight or flee?", ["fight", "flee"])
 
             while True:
                 if fight_or_flee == "flee":
                     print(f"{Fore.CYAN}You turn and run, coward that you are...")
+                    # draw top status bar
+                    draw_ui(current_game)
                     break
                 else:
                     winner = combat.fight(current_game)
@@ -99,14 +106,23 @@ def explore_labyrinth(current_game: Game):
                         current_game.player.xp = current_game.player.xp + 100
                         current_game.player.monsters_defeated = current_game.player.monsters_defeated + 1
                         current_game.room.monster = {}
+                        # draw top status bar
+                        draw_ui(current_game)
                         break
                     elif winner == "monster":
                         print(f"{Fore.RED}You have failed in your mission, and your body lies in the labyrinth forever.")
+                        # draw top status bar
+                        draw_ui(current_game)
                         play_again()
                         break
                     else:
                         print(f"{Fore.CYAN}You flee in terror from the monster.")
+                        # draw top status bar
+                        draw_ui(current_game)
                         break
+
+        # draw top status bar
+        draw_ui(current_game)
 
         player_input = input(f"{Fore.YELLOW}-> {Fore.WHITE}").lower().strip()
 
@@ -194,6 +210,9 @@ def explore_labyrinth(current_game: Game):
                     continue
 
             print(f"{Fore.CYAN}You move deeper into the dungeon.")
+
+            # draw top status bar
+            draw_ui(current_game)
 
         elif player_input == "status":
             print_status(current_game)
@@ -437,3 +456,23 @@ def show_help():
     - status : show current player status
     - q / quit : end the game""")
 
+
+def draw_ui(current_game: Game):
+    # print info across the entire window
+    with current_game.term.location(0, 0):
+        for i in range(current_game.term.width):
+            print(current_game.term.on_green(' '), end="")
+
+    # write health status on top of bar
+    with current_game.term.location(5, 0):
+        print(current_game.term.black_on_green(f"Health: {current_game.player.hp}/{cfg.PLAYER_HP}"))
+
+    # monsters defeated
+    with current_game.term.location(45, 0):
+        print(current_game.term.black_on_green(f"Monsters defeated: "
+                                               + f"{current_game.player.monsters_defeated}/"
+                                               + f"{current_game.num_monsters}"))
+
+    # write xp
+    with current_game.term.location(90, 0):
+        print(current_game.term.black_on_green(f"XP: {current_game.player.xp}"))
